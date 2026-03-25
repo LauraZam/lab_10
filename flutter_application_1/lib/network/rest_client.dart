@@ -10,4 +10,7 @@ abstract class RestClient {
 
   @GET("/posts/1")
   Future<Profile> getProfile();
+
+  @GET("/posts")
+  Future<List<Profile>> getListData();
 }

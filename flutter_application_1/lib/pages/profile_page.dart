@@ -11,7 +11,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ProfileBloc(DioClient())..add(LoadProfile()),
+      create: (context) => ProfileBloc(DioClient())..add(LoadProfile()),
       child: Scaffold(
         appBar: AppBar(title: const Text("Profile")),
         body: BlocBuilder<ProfileBloc, ProfileState>(
@@ -22,29 +22,37 @@ class ProfilePage extends StatelessWidget {
 
             if (state is ProfileLoaded) {
               final profile = state.profile;
-
               return Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("ID: ${profile.id}",
-                        style: const TextStyle(fontSize: 20)),
-                    const SizedBox(height: 10),
-                    Text("Title: ${profile.title}",
-                        style: const TextStyle(fontSize: 18)),
-                    const SizedBox(height: 10),
-                    Text("Body: ${profile.body}"),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "ID: ${profile.id}",
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          "Title: ${profile.title}",
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(height: 10),
+                        Text("Body: ${profile.body}"),
+                      ],
+                    ),
                   ],
                 ),
               );
             }
 
             if (state is ProfileError) {
-              return Center(child: Text(state.message));
+              return Center(child: Text("Ошибка: ${state.message}"));
             }
 
-            return const SizedBox();
+            return const Center(child: Text("Нет данных"));
           },
         ),
       ),
