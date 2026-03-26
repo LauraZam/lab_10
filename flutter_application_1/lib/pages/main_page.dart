@@ -53,7 +53,11 @@ class _MainPageState extends State<MainPage> {
           ),
           NavigationDestination(
             icon: currentPageIndex == 1
-                ? Lottie.asset('assets/lottie/profile.json', width: 30, height: 30)
+                ? Lottie.asset(
+                    'assets/lottie/profile.json',
+                    width: 30,
+                    height: 30,
+                  )
                 : const Icon(Icons.person),
             label: 'Profile',
           ),
@@ -93,11 +97,17 @@ class UserSettingsPage extends StatelessWidget {
           children: [
             Text("Name: $name", style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 10),
-
             Text("Email: $email", style: const TextStyle(fontSize: 18)),
             const SizedBox(height: 10),
-
             Text("Phone: $phone", style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 10),
+            Center(child: Lottie.asset(
+              'assets/lottie/cat.json',
+              height: 200.0,
+              repeat: true,
+              animate: true,
+            ),)
+            
           ],
         ),
       ),
