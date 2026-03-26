@@ -35,7 +35,7 @@ class _MainPageState extends State<MainPage> {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text("My App")),
+      appBar: AppBar(title: const Text("Lab 10")),
       body: pages[currentPageIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentPageIndex,
