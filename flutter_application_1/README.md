@@ -11,3 +11,4 @@
 bloc registration 
 create registration page
 flutter bloc
+dio baseurl headers content type
