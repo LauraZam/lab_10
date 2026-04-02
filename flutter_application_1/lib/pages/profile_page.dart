@@ -13,7 +13,6 @@ class ProfilePage extends StatelessWidget {
     return BlocProvider(
       create: (context) => ProfileBloc(DioClient())..add(LoadProfile()),
       child: Scaffold(
-        appBar: AppBar(title: const Text("Profile")),
         body: BlocBuilder<ProfileBloc, ProfileState>(
           builder: (context, state) {
             if (state is ProfileLoading) {
@@ -49,10 +48,10 @@ class ProfilePage extends StatelessWidget {
             }
 
             if (state is ProfileError) {
-              return Center(child: Text("Ошибка: ${state.message}"));
+              return Center(child: Text("Error: ${state.message}"));
             }
 
-            return const Center(child: Text("Нет данных"));
+            return const Center(child: Text("No data"));
           },
         ),
       ),

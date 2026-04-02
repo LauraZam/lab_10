@@ -15,7 +15,6 @@ class HomePage extends StatelessWidget {
       create: (context) => ProfileBloc(DioClient())..add(LoadProfileList()),
       child: 
      Scaffold(
-      appBar: AppBar(title: Text(title), centerTitle: true),
       body: BlocBuilder<ProfileBloc, ProfileState>(
         builder: (context, state) {
           if (state is ProfileLoading) {

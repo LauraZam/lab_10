@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/bloc/auth/auth_bloc.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:lottie/lottie.dart';
+import 'package:flutter_application_1/pages/main_page.dart';
 import 'package:flutter_application_1/translations/locale_keys.g.dart';
-import 'main_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth/auth_event.dart';
 import '../bloc/auth/auth_state.dart';
@@ -49,14 +52,37 @@ class _RegistrationPageState extends State<RegisterFormPage> {
     });
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      context.read<AuthBloc>().add(
-        RegisterEvent(
-          email: _emailController.text,
-          password: _passController.text,
-        ),
-      );
+      _formKey.currentState!.save();
+
+      const url = 'https://myflutterproject-9958d-default-rtdb.asia-southeast1.firebasedatabase.app/user.json';
+
+      try {
+        await http.post(
+          Uri.parse(url),
+          body: jsonEncode({
+            'name': _nameController.text.trim(),
+            'phone': _phoneController.text.trim(),
+            'Email': _emailController.text.trim(),
+          }),
+        );
+
+        if (mounted) {
+          context.read<AuthBloc>().add(
+            RegisterEvent(
+              email: _emailController.text.trim(),
+              password: _passController.text.trim(),
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text("Error: ${e.toString()}")));
+        }
+      }
     }
   }
 
@@ -89,24 +115,63 @@ class _RegistrationPageState extends State<RegisterFormPage> {
       ),
 
       body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is AuthSuccess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => MainPage(
-                  name: _nameController.text,
-                  email: _emailController.text,
-                  phone: _phoneController.text,
+            final nameToPass = _nameController.text.trim();
+            final emailToPass = _emailController.text.trim();
+            final phoneToPass = _phoneController.text.trim();
+
+            if (mounted) {
+              // Navigator.of(context, rootNavigator: true).pop();
+
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => MainPage(
+                    name: nameToPass,
+                    email: emailToPass,
+                    phone: phoneToPass,
+                  ),
+                ),
+              );
+            }
+
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => Center(
+                child: Lottie.asset(
+                  'assets/lottie/success.json',
+                  width: 200,
+                  repeat: false,
                 ),
               ),
             );
+
+            await Future.delayed(const Duration(seconds: 1));
+            if (context.mounted) {
+              Navigator.of(context, rootNavigator: true).pop();
+            }
           }
 
           if (state is AuthFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.error)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Lottie.asset(
+                      'assets/lottie/error.json',
+                      width: 200,
+                      height: 200,
+                      repeat: false,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(child: Text(state.error)),
+                  ],
+                ),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           }
         },
 
@@ -208,7 +273,16 @@ class _RegistrationPageState extends State<RegisterFormPage> {
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
                   if (state is AuthLoading) {
-                    return const Center(child: CircularProgressIndicator());
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Lottie.asset('assets/lottie/cat.json', width: 120),
+                          SizedBox(height: 16),
+                          Text("Signing in..."),
+                        ],
+                      ),
+                    );
                   }
 
                   return ElevatedButton(
